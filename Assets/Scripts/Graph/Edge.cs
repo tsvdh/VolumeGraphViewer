@@ -8,6 +8,13 @@ namespace Graph
         public int id;
         public Vertex from;
         public Vertex to;
+        
+        private Transform _childTransform;
+
+        private void Start()
+        {
+            _childTransform = transform.GetChild(0);
+        }
 
         public void Init(int id, Vertex from, Vertex to)
         {
@@ -26,6 +33,14 @@ namespace Graph
             localScale.z = lengthScale;
             transform.localScale = localScale;
             transform.LookAt(end);
+        }
+        
+        public void ScaleThickness(float extraScale)
+        {
+            Vector3 edgeScale = transform.localScale;
+            edgeScale.x += extraScale;
+            edgeScale.y += extraScale;
+            transform.localScale = edgeScale;
         }
     }
 }

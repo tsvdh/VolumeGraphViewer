@@ -30,10 +30,10 @@ public class CameraControls : MonoBehaviour
             curTransform.position -= curTransform.right * (Time.deltaTime * moveSpeed);
         if (Input.GetKey(KeyCode.D))
             curTransform.position += curTransform.right * (Time.deltaTime * moveSpeed);
-        if (Input.GetKey(KeyCode.Q))
+        if (Input.GetKey(KeyCode.UpArrow))
             curTransform.position += Vector3.up * (Time.deltaTime * moveSpeed);
-        if (Input.GetKey(KeyCode.E))
-            curTransform.position += Vector3.down * (Time.deltaTime * moveSpeed);
+        if (Input.GetKey(KeyCode.DownArrow))
+            curTransform.position -= Vector3.up * (Time.deltaTime * moveSpeed);
 
         
         Vector3 angles = curTransform.eulerAngles;
@@ -42,16 +42,16 @@ public class CameraControls : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftArrow))
             angles.y -= Time.deltaTime * turnSpeed;
 
-        if (angles.x > 180)
-            angles.x -= 360;
-        if (Input.GetKey(KeyCode.UpArrow))
-            angles.x -= Time.deltaTime * turnSpeed;
-        if (Input.GetKey(KeyCode.DownArrow))
-            angles.x += Time.deltaTime * turnSpeed;
-        
-        angles.x = Math.Clamp(angles.x, -80, 80);
-        if (angles.x < 0)
-            angles.x += 360;
+        // if (angles.x > 180)
+        //     angles.x -= 360;
+        // if (Input.GetKey(KeyCode.UpArrow))
+        //     angles.x -= Time.deltaTime * turnSpeed;
+        // if (Input.GetKey(KeyCode.DownArrow))
+        //     angles.x += Time.deltaTime * turnSpeed;
+        //
+        // angles.x = Math.Clamp(angles.x, -80, 80);
+        // if (angles.x < 0)
+        //     angles.x += 360;
         
         curTransform.eulerAngles = angles;
     }

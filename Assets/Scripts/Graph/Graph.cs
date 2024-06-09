@@ -18,11 +18,37 @@ namespace Graph
         private readonly List<Edge> _edges = new();
         private readonly List<Path> _paths = new();
 
+        private float _curScale = 1;
+
         private void Start()
         {
             _vertexPrefab = Resources.Load<GameObject>("Prefabs/Vertex");
             _edgePrefab = Resources.Load<GameObject>("Prefabs/Edge");
             ReadFromFile();
+        }
+
+        private void Update()
+        {
+            const float scaleSpeed = 1;
+            if (Input.GetKey(KeyCode.LeftBracket))
+                ScaleElementSizes(-Time.deltaTime / scaleSpeed);
+            if (Input.GetKey(KeyCode.RightBracket))
+                ScaleElementSizes(Time.deltaTime / scaleSpeed);
+        }
+
+        private void ScaleElementSizes(float extraScale)
+        {
+            float newScale = _curScale + extraScale;
+            if (newScale < 0.1 || newScale > 2)
+                return;
+
+            _curScale = newScale;
+            
+            foreach (Vertex vertex in _vertices)
+                vertex.ScaleSize(extraScale);
+
+            foreach (Edge edge in _edges)
+                edge.ScaleThickness(extraScale);
         }
 
         private void ReadFromFile()
@@ -70,7 +96,7 @@ namespace Graph
                 var v = vertexObj.GetComponent<Vertex>();
                 _vertices.Add(v);
                 
-                v.Init(int.Parse(vertexData[0]), graphPos, 1);
+                v.Init(int.Parse(vertexData[0]), graphPos);
                 worldPositions.Add(vertexObj.transform.position);
                 
                 lines.RemoveFirst();
