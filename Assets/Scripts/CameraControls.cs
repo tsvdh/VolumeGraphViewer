@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class CameraControls : MonoBehaviour
 {
+    private Vector2 _curMousePos;
+    
+    private void Start()
+    {
+        _curMousePos = Input.mousePosition;
+    }
+
     public void Init(Vector3 graphCenter, Vector3 graphMax)
     {
         // tan(half fov) = half height / dist to center
@@ -15,8 +22,14 @@ public class CameraControls : MonoBehaviour
     
     private void Update()
     {
-        const float moveSpeed = 10f;
-        const float turnSpeed = 90f;
+        const float moveSpeed = 10;
+        const float arrowsTurnSpeed = 90;
+        const float mouseTurnSpeed = 10;
+        const float scrollSpeed = 10;
+
+        Vector2 newMousePos = Input.mousePosition;
+        Vector2 mouseDelta = newMousePos - _curMousePos;
+        _curMousePos = newMousePos;
         
         Transform curTransform = transform;
 
@@ -34,24 +47,30 @@ public class CameraControls : MonoBehaviour
             curTransform.position += Vector3.up * (Time.deltaTime * moveSpeed);
         if (Input.GetKey(KeyCode.DownArrow))
             curTransform.position -= Vector3.up * (Time.deltaTime * moveSpeed);
-
+        if (Input.mouseScrollDelta.y != 0)
+            curTransform.position += Vector3.up * (Time.deltaTime * Input.mouseScrollDelta.y * scrollSpeed);
         
         Vector3 angles = curTransform.eulerAngles;
         if (Input.GetKey(KeyCode.RightArrow))
-            angles.y += Time.deltaTime * turnSpeed;
+            angles.y += Time.deltaTime * arrowsTurnSpeed;
         if (Input.GetKey(KeyCode.LeftArrow))
-            angles.y -= Time.deltaTime * turnSpeed;
+            angles.y -= Time.deltaTime * arrowsTurnSpeed;
+        if (Input.GetMouseButton(1))
+            angles.y += Time.deltaTime * mouseDelta.x * mouseTurnSpeed;
 
-        // if (angles.x > 180)
-        //     angles.x -= 360;
+        if (angles.x > 180)
+            angles.x -= 360;
+        
         // if (Input.GetKey(KeyCode.UpArrow))
-        //     angles.x -= Time.deltaTime * turnSpeed;
+        //     angles.x -= Time.deltaTime * arrowsTurnSpeed;
         // if (Input.GetKey(KeyCode.DownArrow))
-        //     angles.x += Time.deltaTime * turnSpeed;
-        //
-        // angles.x = Math.Clamp(angles.x, -80, 80);
-        // if (angles.x < 0)
-        //     angles.x += 360;
+        //     angles.x += Time.deltaTime * arrowsTurnSpeed;
+        if (Input.GetMouseButton(1))
+            angles.x -= Time.deltaTime * mouseDelta.y * mouseTurnSpeed;
+        
+        angles.x = Math.Clamp(angles.x, -80, 80);
+        if (angles.x < 0)
+            angles.x += 360;
         
         curTransform.eulerAngles = angles;
     }
