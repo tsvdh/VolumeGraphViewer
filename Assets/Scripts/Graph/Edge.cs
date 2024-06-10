@@ -9,18 +9,15 @@ namespace Graph
         public Vertex from;
         public Vertex to;
         
-        private Transform _childTransform;
-
-        private void Start()
-        {
-            _childTransform = transform.GetChild(0);
-        }
+        private Renderer _renderer;
 
         public void Init(int id, Vertex from, Vertex to)
         {
             this.id = id;
             this.from = from;
             this.to = to;
+            
+            _renderer = GetComponentInChildren<Renderer>();
 
             Vector3 start = from.transform.position;
             Vector3 end = to.transform.position;
@@ -33,6 +30,11 @@ namespace Graph
             localScale.z = lengthScale;
             transform.localScale = localScale;
             transform.LookAt(end);
+        }
+        
+        public void SetMaterial(Material material)
+        {
+            _renderer.material = material;
         }
         
         public void ScaleThickness(float extraScale)

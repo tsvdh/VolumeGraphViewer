@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -10,9 +11,11 @@ namespace Graph
     {
         public string basePath;
         public string fileName;
+        public bool useSimpleMeshes;
 
         private GameObject _vertexPrefab; 
         private GameObject _edgePrefab;
+        private Material _blueTrans;
         
         private readonly List<Vertex> _vertices = new();
         private readonly List<Edge> _edges = new();
@@ -22,8 +25,23 @@ namespace Graph
 
         private void Start()
         {
-            _vertexPrefab = Resources.Load<GameObject>("Prefabs/Vertex");
-            _edgePrefab = Resources.Load<GameObject>("Prefabs/Edge");
+            string vertexPrefabPath;
+            string edgePrefabPath;
+            
+            if (useSimpleMeshes)
+            {
+                vertexPrefabPath = "Prefabs/Simple/VertexSimple";
+                edgePrefabPath = "Prefabs/Simple/EdgeSimple";
+            }
+            else
+            {
+                vertexPrefabPath = "Prefabs/Detailed/Vertex";
+                edgePrefabPath = "Prefabs/Detailed/Edge";
+            }
+            
+            _vertexPrefab = Resources.Load<GameObject>(vertexPrefabPath);
+            _edgePrefab = Resources.Load<GameObject>(edgePrefabPath);
+            _blueTrans = Resources.Load<Material>("BlueTransparent");
             ReadFromFile();
         }
 
@@ -57,6 +75,9 @@ namespace Graph
                 Destroy(child.gameObject);
             
             var lines = new LinkedList<string>(File.ReadAllLines($"{basePath}/{fileName}.txt"));
+
+            var description = new List<string>(lines.First.Value.Split(' '));
+            lines.RemoveFirst();
             
             string[] extraMeta = lines.First.Value.Split(' ');
             string graphName = extraMeta[0];
@@ -170,6 +191,15 @@ namespace Graph
                 }
                 
                 lines.RemoveFirst();
+            }
+
+            if (description.Contains("full_paths"))
+            {
+                foreach (Path path in _paths)
+                {
+                    path.Edges[0].SetMaterial(_blueTrans);
+                    path.Edges[0].from.SetMaterial(_blueTrans);
+                }
             }
         }
     }
