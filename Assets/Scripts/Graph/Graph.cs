@@ -57,7 +57,7 @@ namespace Graph
         private void ScaleElementSizes(float extraScale)
         {
             float newScale = _curScale + extraScale;
-            if (newScale < 0.1 || newScale > 2)
+            if (newScale < 0.1 || newScale > 10)
                 return;
 
             _curScale = newScale;

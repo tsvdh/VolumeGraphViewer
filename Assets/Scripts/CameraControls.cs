@@ -4,6 +4,7 @@ using UnityEngine;
 public class CameraControls : MonoBehaviour
 {
     private Vector2 _curMousePos;
+    private float _moveSpeedModifier;
     
     private void Start()
     {
@@ -18,14 +19,17 @@ public class CameraControls : MonoBehaviour
         Vector3 camPos = transform.position;
         camPos.z = -(graphMax.y - graphCenter.y) / (float)Math.Tan(Math.PI / 180 * halfFoV);
         transform.position = camPos;
+        
+        // half height in 5 seconds
+        _moveSpeedModifier = (graphMax.y - graphCenter.y) / 5;
     }
     
     private void Update()
     {
-        const float moveSpeed = 10;
+        float moveSpeed = _moveSpeedModifier;
+        float scrollSpeed = _moveSpeedModifier;
         const float arrowsTurnSpeed = 90;
         const float mouseTurnSpeed = 10;
-        const float scrollSpeed = 10;
 
         Vector2 newMousePos = Input.mousePosition;
         Vector2 mouseDelta = newMousePos - _curMousePos;
