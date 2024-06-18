@@ -88,7 +88,7 @@ namespace Graph
             switch (graphName)
             {
                 case "uniform":
-                    spacing = float.Parse(extraMeta[0]);
+                    spacing = float.Parse(extraMeta[1]);
                     break;
             }
             lines.RemoveFirst();
