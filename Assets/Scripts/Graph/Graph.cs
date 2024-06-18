@@ -47,26 +47,29 @@ namespace Graph
 
         private void Update()
         {
-            const float scaleSpeed = 1;
+            // double scale in .2 seconds
+            const float scaleSpeed = 0.2f;
             if (Input.GetKey(KeyCode.LeftBracket))
-                ScaleElementSizes(-Time.deltaTime / scaleSpeed);
+                ScaleElementSizes(1 - Time.deltaTime / scaleSpeed);
             if (Input.GetKey(KeyCode.RightBracket))
-                ScaleElementSizes(Time.deltaTime / scaleSpeed);
+                ScaleElementSizes(1 + Time.deltaTime / scaleSpeed);
         }
 
-        private void ScaleElementSizes(float extraScale)
+        private void ScaleElementSizes(float scale)
         {
-            float newScale = _curScale + extraScale;
+            float newScale = _curScale * scale;
             if (newScale < 0.1 || newScale > 10)
                 return;
 
-            _curScale = newScale;
-            
+            var newVertexScale = new Vector3(newScale, newScale, newScale);
             foreach (Vertex vertex in _vertices)
-                vertex.ScaleSize(extraScale);
+                vertex.transform.localScale = newVertexScale;
 
+            var newEdgeScale = new Vector3(newScale, newScale, 0);
             foreach (Edge edge in _edges)
-                edge.ScaleThickness(extraScale);
+                edge.transform.localScale = newEdgeScale;
+            
+            _curScale = newScale;
         }
 
         private void ReadFromFile()

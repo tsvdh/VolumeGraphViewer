@@ -36,13 +36,5 @@ namespace Graph
         {
             _renderer.material = material;
         }
-        
-        public void ScaleThickness(float extraScale)
-        {
-            Vector3 edgeScale = transform.localScale;
-            edgeScale.x += extraScale;
-            edgeScale.y += extraScale;
-            transform.localScale = edgeScale;
-        }
     }
 }

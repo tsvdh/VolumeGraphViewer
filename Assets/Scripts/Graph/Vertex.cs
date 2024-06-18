@@ -25,13 +25,6 @@ namespace Graph
             transform.position = graphPos;
         }
 
-        public void ScaleSize(float extraScale)
-        {
-            Vector3 vertexScale = transform.localScale;
-            vertexScale += new Vector3(extraScale, extraScale, extraScale);
-            transform.localScale = vertexScale;
-        }
-
         public void SetMaterial(Material material)
         {
             _renderer.material = material;

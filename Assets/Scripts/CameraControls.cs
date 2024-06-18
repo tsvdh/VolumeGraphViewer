@@ -28,7 +28,9 @@ public class CameraControls : MonoBehaviour
     {
         float moveSpeed = _moveSpeedModifier;
         float scrollSpeed = _moveSpeedModifier;
+        // 90 degrees in one second
         const float arrowsTurnSpeed = 90;
+        // ?
         const float mouseTurnSpeed = 10;
 
         Vector2 newMousePos = Input.mousePosition;
