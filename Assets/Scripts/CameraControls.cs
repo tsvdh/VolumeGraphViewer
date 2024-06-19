@@ -26,8 +26,10 @@ public class CameraControls : MonoBehaviour
     
     private void Update()
     {
-        float moveSpeed = _moveSpeedModifier;
-        float scrollSpeed = _moveSpeedModifier;
+        float newMoveSpeedModifier = _moveSpeedModifier * (Input.GetKey(KeyCode.LeftShift) ? 5 : 1);
+        float moveSpeed = newMoveSpeedModifier;
+        float scrollSpeed = newMoveSpeedModifier;
+        
         // 90 degrees in one second
         const float arrowsTurnSpeed = 90;
         // ?
