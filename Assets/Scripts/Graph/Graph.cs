@@ -4,15 +4,19 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
+using Object = UnityEngine.Object;
 
 namespace Graph
 {
     public class Graph : MonoBehaviour
     {
-        public string basePath;
-        public string fileName;
         public bool useSimpleMeshes;
-        public bool centerCamera;
+        public string id;
+        public string fileName;
+        public bool primaryGraph;
+
+        private GraphHelper _helper;
 
         private GameObject _vertexPrefab; 
         private GameObject _edgePrefab;
@@ -27,6 +31,8 @@ namespace Graph
 
         private void Start()
         {
+            _helper = GetComponent<GraphHelper>();
+            
             string vertexPrefabPath;
             string edgePrefabPath;
             
@@ -80,12 +86,16 @@ namespace Graph
 
         private void ReadFromFile()
         {
-            foreach (Transform child in transform)
-                Destroy(child.gameObject);
+            GameObject example = GameObject.Find("Example");
+            if (primaryGraph && example)
+                Destroy(example);
+
+            var container = new GameObject(id);
+            container.transform.parent = transform;
 
             long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            var lines = new LinkedList<string>(File.ReadAllLines($"{basePath}/{fileName}.txt"));
-            Debug.Log(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start);
+            var lines = new LinkedList<string>(File.ReadAllLines($"{_helper.basePath}/{fileName}.txt"));
+            Debug.Log($"{id} {DateTimeOffset.Now.ToUnixTimeMilliseconds() - start}");
 
             start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var description = new List<string>(lines.First.Value.Split(' '));
@@ -125,7 +135,7 @@ namespace Graph
                     z = float.Parse(vertexData[3])
                 };
                 
-                GameObject vertexObj = Instantiate(_vertexPrefab, transform);
+                GameObject vertexObj = Instantiate(_vertexPrefab, container.transform);
                 var v = vertexObj.GetComponent<Vertex>();
                 _vertices.Add(v);
                 
@@ -147,7 +157,7 @@ namespace Graph
             }
             Vector3 graphCenter = graphMin + (graphMax - graphMin) / 2;
 
-            if (centerCamera)
+            if (primaryGraph)
                 GameObject.Find("Camera").GetComponent<CameraControls>()
                           .Init(graphCenter, graphMax);
 
@@ -155,7 +165,7 @@ namespace Graph
             {
                 string[] edgeData = lines.First.Value.Split(' ');
                 
-                GameObject edgeObj = Instantiate(_edgePrefab, transform);
+                GameObject edgeObj = Instantiate(_edgePrefab, container.transform);
                 var e = edgeObj.GetComponent<Edge>();
                 _edges.Add(e);
                 
@@ -202,8 +212,6 @@ namespace Graph
                 
                 lines.RemoveFirst();
             }
-            
-            Debug.Log(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start);
 
             if (description.Contains("full_paths"))
             {
@@ -232,6 +240,7 @@ namespace Graph
                 }
             }
 
+            Debug.Log($"{id} {DateTimeOffset.Now.ToUnixTimeMilliseconds() - start}");
             return;
 
             void EnLarge(Transform toEnlarge)
