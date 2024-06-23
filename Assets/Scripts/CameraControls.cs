@@ -16,7 +16,7 @@ public class CameraControls : MonoBehaviour
         // tan(half fov) = half height / dist to center
         // dist to center = half height / tan(30)
         float halfFoV = GetComponent<Camera>().fieldOfView / 2;
-        Vector3 camPos = transform.position;
+        Vector3 camPos = graphCenter;
         camPos.z = -(graphMax.y - graphCenter.y) / (float)Math.Tan(Math.PI / 180 * halfFoV);
         transform.position = camPos;
         

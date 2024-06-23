@@ -12,10 +12,12 @@ namespace Graph
         public string basePath;
         public string fileName;
         public bool useSimpleMeshes;
+        public bool centerCamera;
 
         private GameObject _vertexPrefab; 
         private GameObject _edgePrefab;
         private Material _blueTrans;
+        private Material _redTrans;
         
         private readonly List<Vertex> _vertices = new();
         private readonly List<Edge> _edges = new();
@@ -42,6 +44,7 @@ namespace Graph
             _vertexPrefab = Resources.Load<GameObject>(vertexPrefabPath);
             _edgePrefab = Resources.Load<GameObject>(edgePrefabPath);
             _blueTrans = Resources.Load<Material>("BlueTransparent");
+            _redTrans = Resources.Load<Material>("RedTransparent");
             ReadFromFile();
         }
 
@@ -65,9 +68,12 @@ namespace Graph
             foreach (Vertex vertex in _vertices)
                 vertex.transform.localScale = newVertexScale;
 
-            var newEdgeScale = new Vector3(newScale, newScale, 0);
+
             foreach (Edge edge in _edges)
+            {
+                var newEdgeScale = new Vector3(newScale, newScale, edge.transform.localScale.z);
                 edge.transform.localScale = newEdgeScale;
+            }
             
             _curScale = newScale;
         }
@@ -76,9 +82,12 @@ namespace Graph
         {
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
-            
-            var lines = new LinkedList<string>(File.ReadAllLines($"{basePath}/{fileName}.txt"));
 
+            long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            var lines = new LinkedList<string>(File.ReadAllLines($"{basePath}/{fileName}.txt"));
+            Debug.Log(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start);
+
+            start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var description = new List<string>(lines.First.Value.Split(' '));
             lines.RemoveFirst();
             
@@ -130,19 +139,17 @@ namespace Graph
             Vector3 graphMax = Vector3.negativeInfinity;
             foreach (Vector3 pos in worldPositions)
             {
-                graphMin.x = Math.Min(graphMin.x, pos.x);
-                graphMax.x = Math.Max(graphMax.x, pos.x);
-                graphMin.y = Math.Min(graphMin.y, pos.y);
-                graphMax.y = Math.Max(graphMax.y, pos.y);
-                graphMin.z = Math.Min(graphMin.z, pos.z);
-                graphMax.z = Math.Max(graphMax.z, pos.z);
+                for (var i = 0; i < 3; i++)
+                {
+                    graphMin[i] = Math.Min(graphMin[i], pos[i]);
+                    graphMax[i] = Math.Max(graphMax[i], pos[i]);
+                }
             }
             Vector3 graphCenter = graphMin + (graphMax - graphMin) / 2;
 
-            transform.position = -graphCenter;
-
-            GameObject.Find("Camera").GetComponent<CameraControls>()
-                      .Init(graphCenter, graphMax);
+            if (centerCamera)
+                GameObject.Find("Camera").GetComponent<CameraControls>()
+                          .Init(graphCenter, graphMax);
 
             for (var i = 0; i < numEdges; i++)
             {
@@ -195,6 +202,8 @@ namespace Graph
                 
                 lines.RemoveFirst();
             }
+            
+            Debug.Log(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start);
 
             if (description.Contains("full_paths"))
             {
@@ -203,6 +212,34 @@ namespace Graph
                     path.Edges[0].SetMaterial(_blueTrans);
                     path.Edges[0].from.SetMaterial(_blueTrans);
                 }
+            }
+
+            if (description.Contains("grid_queue"))
+            {
+                foreach (Vertex vertex in _vertices)
+                {
+                    vertex.SetMaterial(_blueTrans);
+                    EnLarge(vertex.transform);
+                }
+            }
+            
+            if (description.Contains("grid_surface"))
+            {
+                foreach (Vertex vertex in _vertices)
+                {
+                    vertex.SetMaterial(_redTrans);
+                    EnLarge(vertex.transform);
+                }
+            }
+
+            return;
+
+            void EnLarge(Transform toEnlarge)
+            {
+                Transform child = toEnlarge.GetChild(0);
+                Vector3 scale = child.localScale;
+                scale *= 1.2f;
+                child.localScale = scale;
             }
         }
     }
