@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 namespace Graph
 {
-    public class Vertex : MonoBehaviour
+    public class Vertex : MonoBehaviour, IScalable
     {
         public int id;
         public Vector3 graphPos;
@@ -28,6 +28,16 @@ namespace Graph
         public void SetMaterial(Material material)
         {
             _renderer.material = material;
+        }
+        
+        public void SetScale(float scale)
+        {
+            transform.localScale = new Vector3(scale, scale, scale);
+        }
+
+        public void ScaleChild(float scale)
+        {
+            transform.GetChild(0).localScale *= scale;
         }
     }
 }

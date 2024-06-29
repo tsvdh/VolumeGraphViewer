@@ -67,19 +67,14 @@ namespace Graph
         private void ScaleElementSizes(float scale)
         {
             float newScale = _curScale * scale;
-            if (newScale < 0.1 || newScale > 10)
+            if (newScale < 0.01 || newScale > 100)
                 return;
-
-            var newVertexScale = new Vector3(newScale, newScale, newScale);
+            
             foreach (Vertex vertex in _vertices)
-                vertex.transform.localScale = newVertexScale;
-
-
+                vertex.SetScale(newScale);
+            
             foreach (Edge edge in _edges)
-            {
-                var newEdgeScale = new Vector3(newScale, newScale, edge.transform.localScale.z);
-                edge.transform.localScale = newEdgeScale;
-            }
+                edge.SetScale(newScale);
             
             _curScale = newScale;
         }
@@ -217,8 +212,13 @@ namespace Graph
             {
                 foreach (Path path in _paths)
                 {
-                    path.Edges[0].SetMaterial(_blueTrans);
-                    path.Edges[0].from.SetMaterial(_blueTrans);
+                    if (path.Edges.Count > 0)
+                    {
+                        path.Edges[0].SetMaterial(_blueTrans);
+                        path.Edges[0].from.SetMaterial(_blueTrans);
+                        path.Edges[0].ScaleChild(0.2f);
+                        path.Edges[0].from.ScaleChild(0.2f);
+                    }
                 }
             }
 
@@ -227,7 +227,7 @@ namespace Graph
                 foreach (Vertex vertex in _vertices)
                 {
                     vertex.SetMaterial(_blueTrans);
-                    EnLarge(vertex.transform);
+                    vertex.ScaleChild(1.2f);
                 }
             }
             
@@ -236,20 +236,20 @@ namespace Graph
                 foreach (Vertex vertex in _vertices)
                 {
                     vertex.SetMaterial(_redTrans);
-                    EnLarge(vertex.transform);
+                    vertex.ScaleChild(1.2f);
+                }
+            }
+
+            if (description.Contains("surface"))
+            {
+                foreach (Vertex vertex in _vertices)
+                {
+                    vertex.SetMaterial(_redTrans);
+                    vertex.ScaleChild(0.6f);
                 }
             }
 
             Debug.Log($"{id} {DateTimeOffset.Now.ToUnixTimeMilliseconds() - start}");
-            return;
-
-            void EnLarge(Transform toEnlarge)
-            {
-                Transform child = toEnlarge.GetChild(0);
-                Vector3 scale = child.localScale;
-                scale *= 1.2f;
-                child.localScale = scale;
-            }
         }
     }
 }

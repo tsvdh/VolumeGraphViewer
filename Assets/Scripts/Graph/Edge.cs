@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Graph
 {
-    public class Edge : MonoBehaviour
+    public class Edge : MonoBehaviour, IScalable
     {
         public int id;
         public Vertex from;
@@ -35,6 +35,20 @@ namespace Graph
         public void SetMaterial(Material material)
         {
             _renderer.material = material;
+        }
+
+        public void SetScale(float scale)
+        {
+            transform.localScale = new Vector3(scale, scale, transform.localScale.z);
+        }
+
+        public void ScaleChild(float scale)
+        {
+            Transform child = transform.GetChild(0);
+            Vector3 newScale = child.localScale;
+            newScale.x *= scale;
+            newScale.z *= scale;
+            child.localScale = newScale;
         }
     }
 }
