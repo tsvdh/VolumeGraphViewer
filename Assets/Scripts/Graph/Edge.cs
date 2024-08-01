@@ -1,23 +1,23 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Graph
 {
-    public class Edge : MonoBehaviour, IScalable
+    public class Edge : Colorable, IScalable
     {
         public int id;
         public Vertex from;
         public Vertex to;
-        
-        private Renderer _renderer;
+        public EdgeData data;
 
-        public void Init(int id, Vertex from, Vertex to)
+        public void Init(int id, Vertex from, Vertex to, EdgeData data)
         {
             this.id = id;
             this.from = from;
             this.to = to;
-            
-            _renderer = GetComponentInChildren<Renderer>();
+            this.data = data;
 
             Vector3 start = from.transform.position;
             Vector3 end = to.transform.position;
@@ -30,11 +30,6 @@ namespace Graph
             localScale.z = lengthScale;
             transform.localScale = localScale;
             transform.LookAt(end);
-        }
-        
-        public void SetMaterial(Material material)
-        {
-            _renderer.material = material;
         }
 
         public void SetScale(float scale)
@@ -50,5 +45,11 @@ namespace Graph
             newScale.z *= scale;
             child.localScale = newScale;
         }
+    }
+
+    public class EdgeData
+    {
+        public List<float> Throughput;
+        public float WeightedThroughput;
     }
 }

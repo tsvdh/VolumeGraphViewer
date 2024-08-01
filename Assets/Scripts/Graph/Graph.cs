@@ -49,8 +49,7 @@ namespace Graph
             
             _vertexPrefab = Resources.Load<GameObject>(vertexPrefabPath);
             _edgePrefab = Resources.Load<GameObject>(edgePrefabPath);
-            _blueTrans = Resources.Load<Material>("BlueTransparent");
-            _redTrans = Resources.Load<Material>("RedTransparent");
+
             ReadFromFile();
         }
 
@@ -183,8 +182,10 @@ namespace Graph
                     }
                 }
                 Assert.IsTrue(fromVertex && toVertex);
-                
-                e.Init(int.Parse(edgeData[0]), fromVertex, toVertex);
+
+                (_, EdgeData parsedData) = ReadEdgeData(3, edgeData);
+
+                e.Init(int.Parse(edgeData[0]), fromVertex, toVertex, parsedData);
                 
                 lines.RemoveFirst();
             }
@@ -195,13 +196,21 @@ namespace Graph
                 var path = new Path { ID = int.Parse(pathData[0]) };
                 _paths.Add(path);
 
-                for (var pathEdge = 2; pathEdge < int.Parse(pathData[1]) + 2; pathEdge++)
+                var index = 2;
+                while (index < int.Parse(pathData[1]))
                 {
-                    int pathEdgeId = int.Parse(pathData[pathEdge]);
+                    int pathEdgeId = int.Parse(pathData[index++]);
                     foreach (Edge edge in _edges)
                     {
                         if (edge.id == pathEdgeId)
+                        {
                             path.Edges.Add(edge);
+                            (int newIndex, EdgeData edgeData) = ReadEdgeData(index, pathData);
+                            index = newIndex;
+                            edge.InitColor(edgeData);
+
+                            break;
+                        }
                     }
                 }
                 
@@ -214,10 +223,15 @@ namespace Graph
                 {
                     if (path.Edges.Count > 0)
                     {
-                        path.Edges[0].SetMaterial(_blueTrans);
-                        path.Edges[0].from.SetMaterial(_blueTrans);
+                        path.Edges[0].SetMaterial(GraphColor.BlueTrans);
+                        path.Edges[0].from.SetMaterial(GraphColor.BlueTrans);
                         path.Edges[0].ScaleChild(0.2f);
                         path.Edges[0].from.ScaleChild(0.2f);
+                    }
+
+                    for (var i = 1; i < path.Edges.Count; i++)
+                    {
+                        path.Edges[i].ShowThroughput();
                     }
                 }
             }
@@ -226,7 +240,7 @@ namespace Graph
             {
                 foreach (Vertex vertex in _vertices)
                 {
-                    vertex.SetMaterial(_blueTrans);
+                    vertex.SetMaterial(GraphColor.BlueTrans);
                     vertex.ScaleChild(1.2f);
                 }
             }
@@ -235,7 +249,7 @@ namespace Graph
             {
                 foreach (Vertex vertex in _vertices)
                 {
-                    vertex.SetMaterial(_redTrans);
+                    vertex.SetMaterial(GraphColor.RedTrans);
                     vertex.ScaleChild(1.2f);
                 }
             }
@@ -244,12 +258,22 @@ namespace Graph
             {
                 foreach (Vertex vertex in _vertices)
                 {
-                    vertex.SetMaterial(_redTrans);
+                    vertex.SetMaterial(GraphColor.RedTrans);
                     vertex.ScaleChild(0.6f);
                 }
             }
 
             Debug.Log($"{id} {DateTimeOffset.Now.ToUnixTimeMilliseconds() - start}");
+        }
+
+        private Tuple<int, EdgeData> ReadEdgeData(int start, string[] input)
+        {
+            var data = new EdgeData {Throughput = new List<float>(4),
+                WeightedThroughput = float.Parse(input[start + 4]) };
+            for (var j = 0; j < 4; j++)
+                data.Throughput[j] = float.Parse(input[j]);
+
+            return new Tuple<int, EdgeData>(start + 5, data);
         }
     }
 }
