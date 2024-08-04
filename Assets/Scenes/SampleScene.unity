@@ -729,7 +729,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useSimpleMeshes: 1
   id: base
-  fileName: surface_cube
+  fileName: surfaces/cube
   primaryGraph: 1
 --- !u!4 &1221586416
 Transform:
@@ -761,7 +761,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useSimpleMeshes: 1
   id: paths
-  fileName: cube_paths
+  fileName: paths/cube
   primaryGraph: 0
 --- !u!114 &1221586418
 MonoBehaviour:

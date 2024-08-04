@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Graph
 {
@@ -16,8 +13,8 @@ namespace Graph
 
         public void Init(int id, Vector3 graphPos)
         {
-            base.Init(null);
-
+            base.Init();
+            
             this.id = id;
             this.graphPos = graphPos;
 

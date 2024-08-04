@@ -89,7 +89,7 @@ namespace Graph
 
             long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var lines = new LinkedList<string>(File.ReadAllLines($"{_helper.basePath}/{fileName}.txt"));
-            Debug.Log($"{id} {DateTimeOffset.Now.ToUnixTimeMilliseconds() - start}");
+            Debug.Log($"Reading {id} {DateTimeOffset.Now.ToUnixTimeMilliseconds() - start}ms");
 
             start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var description = new List<string>(lines.First.Value.Split(' '));
@@ -108,6 +108,7 @@ namespace Graph
 
             string[] flags = lines.First.Value.Split(' ');
             bool useCoors = bool.Parse(flags[0]);
+            bool useThroughput = bool.Parse(flags[1]);
             lines.RemoveFirst();
 
             string[] baseMeta = lines.First.Value.Split(' ');
@@ -183,7 +184,9 @@ namespace Graph
                 }
                 Assert.IsTrue(fromVertex && toVertex);
 
-                (_, EdgeData parsedData) = ReadEdgeData(3, edgeData);
+                EdgeData parsedData = null;
+                if (useThroughput)
+                    (_, parsedData) = ReadEdgeData(3, edgeData);
 
                 e.Init(int.Parse(edgeData[0]), fromVertex, toVertex, parsedData);
                 
@@ -197,7 +200,9 @@ namespace Graph
                 _paths.Add(path);
 
                 var index = 2;
-                while (index < int.Parse(pathData[1]))
+                int edgesInPath = int.Parse(pathData[1]);
+                int numsToParse = edgesInPath * (useThroughput ? 6 : 1);
+                while (index <  2 + numsToParse)
                 {
                     int pathEdgeId = int.Parse(pathData[index++]);
                     foreach (Edge edge in _edges)
@@ -205,15 +210,17 @@ namespace Graph
                         if (edge.id == pathEdgeId)
                         {
                             path.Edges.Add(edge);
-                            (int newIndex, EdgeData edgeData) = ReadEdgeData(index, pathData);
-                            index = newIndex;
-                            edge.InitColor(edgeData);
 
+                            if (useThroughput)
+                            {
+                                (int newIndex, EdgeData edgeData) = ReadEdgeData(index, pathData);
+                                index = newIndex;
+                                edge.SetColorData(edgeData);
+                            }
                             break;
                         }
                     }
                 }
-                
                 lines.RemoveFirst();
             }
 
@@ -229,9 +236,13 @@ namespace Graph
                         path.Edges[0].from.ScaleChild(0.2f);
                     }
 
-                    for (var i = 1; i < path.Edges.Count; i++)
+                    if (useThroughput)
                     {
-                        path.Edges[i].ShowThroughput();
+                        for (var i = 1; i < path.Edges.Count; i++)
+                        {
+                            path.Edges[i].SetMaterial(GraphColor.Yellow);
+                            path.Edges[i].ShowThroughput();
+                        }
                     }
                 }
             }
@@ -263,15 +274,15 @@ namespace Graph
                 }
             }
 
-            Debug.Log($"{id} {DateTimeOffset.Now.ToUnixTimeMilliseconds() - start}");
+            Debug.Log($"Parsing {id} {DateTimeOffset.Now.ToUnixTimeMilliseconds() - start}ms");
         }
 
-        private Tuple<int, EdgeData> ReadEdgeData(int start, string[] input)
+        private static Tuple<int, EdgeData> ReadEdgeData(int start, string[] input)
         {
             var data = new EdgeData {Throughput = new List<float>(4),
                 WeightedThroughput = float.Parse(input[start + 4]) };
             for (var j = 0; j < 4; j++)
-                data.Throughput[j] = float.Parse(input[j]);
+                data.Throughput.Add(float.Parse(input[start + j]));
 
             return new Tuple<int, EdgeData>(start + 5, data);
         }

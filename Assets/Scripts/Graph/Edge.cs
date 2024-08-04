@@ -14,6 +14,8 @@ namespace Graph
 
         public void Init(int id, Vertex from, Vertex to, EdgeData data)
         {
+            base.Init();
+            
             this.id = id;
             this.from = from;
             this.to = to;

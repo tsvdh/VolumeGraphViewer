@@ -12,17 +12,25 @@ namespace Graph
 
     public class Colorable : MonoBehaviour
     {
-        private static readonly Material BlueTrans = Resources.Load<Material>("BlueTransparent");
-        private static readonly Material RedTrans = Resources.Load<Material>("RedTransparent");
-        private static readonly Material Yellow = Resources.Load<Material>("Yellow");
+        private static Material _blueTrans;
+        private static Material _redTrans;
+        private static Material _yellow;
 
         private Renderer _renderer;
         private GraphColor _color;
         private EdgeData _data;
 
-        public void InitColor(EdgeData data)
+        protected void Init()
         {
+            _blueTrans = Resources.Load<Material>("BlueTransparent");
+            _redTrans = Resources.Load<Material>("RedTransparent");
+            _yellow = Resources.Load<Material>("Yellow");
+            
             _renderer = GetComponentInChildren<Renderer>();
+        }
+
+        public void SetColorData(EdgeData data)
+        {
             _data = data;
         }
 
@@ -31,9 +39,9 @@ namespace Graph
             _color = color;
             _renderer.material = color switch
             {
-                GraphColor.BlueTrans => BlueTrans,
-                GraphColor.RedTrans => RedTrans,
-                GraphColor.Yellow => Yellow,
+                GraphColor.BlueTrans => _blueTrans,
+                GraphColor.RedTrans => _redTrans,
+                GraphColor.Yellow => _yellow,
                 _ => throw new SystemException()
             };
         }
@@ -54,7 +62,7 @@ namespace Graph
                 throw new SystemException();
 
             Color newColor = _renderer.material.color;
-            newColor.b = 255 * weight;
+            newColor.b = 1 - weight;
             _renderer.material.color = newColor;
         }
     }
