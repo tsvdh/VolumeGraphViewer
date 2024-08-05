@@ -230,8 +230,8 @@ namespace Graph
                 {
                     if (path.Edges.Count > 0)
                     {
-                        path.Edges[0].SetMaterial(GraphColor.BlueTrans);
-                        path.Edges[0].from.SetMaterial(GraphColor.BlueTrans);
+                        path.Edges[0].SetMaterial(GraphColor.YellowTrans);
+                        path.Edges[0].from.SetMaterial(GraphColor.YellowTrans);
                         path.Edges[0].ScaleChild(0.2f);
                         path.Edges[0].from.ScaleChild(0.2f);
                     }
@@ -251,7 +251,7 @@ namespace Graph
             {
                 foreach (Vertex vertex in _vertices)
                 {
-                    vertex.SetMaterial(GraphColor.BlueTrans);
+                    vertex.SetMaterial(GraphColor.YellowTrans);
                     vertex.ScaleChild(1.2f);
                 }
             }

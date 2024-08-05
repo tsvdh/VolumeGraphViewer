@@ -5,14 +5,14 @@ namespace Graph
 {
     public enum GraphColor
     {
-        BlueTrans,
+        YellowTrans,
         RedTrans,
         Yellow
     }
 
     public class Colorable : MonoBehaviour
     {
-        private static Material _blueTrans;
+        private static Material _yellowTrans;
         private static Material _redTrans;
         private static Material _yellow;
 
@@ -22,7 +22,7 @@ namespace Graph
 
         protected void Init()
         {
-            _blueTrans = Resources.Load<Material>("BlueTransparent");
+            _yellowTrans = Resources.Load<Material>("YellowTransparent");
             _redTrans = Resources.Load<Material>("RedTransparent");
             _yellow = Resources.Load<Material>("Yellow");
             
@@ -39,7 +39,7 @@ namespace Graph
             _color = color;
             _renderer.material = color switch
             {
-                GraphColor.BlueTrans => _blueTrans,
+                GraphColor.YellowTrans => _yellowTrans,
                 GraphColor.RedTrans => _redTrans,
                 GraphColor.Yellow => _yellow,
                 _ => throw new SystemException()
