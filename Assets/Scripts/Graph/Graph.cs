@@ -20,8 +20,6 @@ namespace Graph
 
         private GameObject _vertexPrefab; 
         private GameObject _edgePrefab;
-        private Material _blueTrans;
-        private Material _redTrans;
         
         private readonly List<Vertex> _vertices = new();
         private readonly List<Edge> _edges = new();
@@ -109,6 +107,7 @@ namespace Graph
             string[] flags = lines.First.Value.Split(' ');
             bool useCoors = bool.Parse(flags[0]);
             bool useThroughput = bool.Parse(flags[1]);
+            bool useRayVertexType = bool.Parse(flags[2]);
             lines.RemoveFirst();
 
             string[] baseMeta = lines.First.Value.Split(' ');
@@ -118,7 +117,7 @@ namespace Graph
             int numPaths = int.Parse(baseMeta[3]);
             lines.RemoveFirst();
 
-            var worldPositions = new List<Vector3>();
+            var vertexWorldPositions = new List<Vector3>();
 
             for (var i = 0; i < numVertices; i++)
             {
@@ -133,16 +132,18 @@ namespace Graph
                 GameObject vertexObj = Instantiate(_vertexPrefab, container.transform);
                 var v = vertexObj.GetComponent<Vertex>();
                 _vertices.Add(v);
+
+                int vertexType = useRayVertexType ? int.Parse(vertexData[4]) : -1;
                 
-                v.Init(int.Parse(vertexData[0]), graphPos);
-                worldPositions.Add(vertexObj.transform.position);
+                v.Init(int.Parse(vertexData[0]), graphPos, vertexType);
+                vertexWorldPositions.Add(vertexObj.transform.position);
                 
                 lines.RemoveFirst();
             }
             
             Vector3 graphMin = Vector3.positiveInfinity;
             Vector3 graphMax = Vector3.negativeInfinity;
-            foreach (Vector3 pos in worldPositions)
+            foreach (Vector3 pos in vertexWorldPositions)
             {
                 for (var i = 0; i < 3; i++)
                 {
@@ -224,14 +225,14 @@ namespace Graph
                 lines.RemoveFirst();
             }
 
-            if (description.Contains("full_paths"))
+            if (description.Contains("paths"))
             {
                 foreach (Path path in _paths)
                 {
                     if (path.Edges.Count > 0)
                     {
-                        path.Edges[0].SetMaterial(GraphColor.YellowTrans);
-                        path.Edges[0].from.SetMaterial(GraphColor.YellowTrans);
+                        path.Edges[0].SetMaterial(GraphColor.YellowTransparent);
+                        path.Edges[0].from.SetMaterial(GraphColor.YellowTransparent);
                         path.Edges[0].ScaleChild(0.2f);
                         path.Edges[0].from.ScaleChild(0.2f);
                     }
@@ -244,23 +245,40 @@ namespace Graph
                             path.Edges[i].ShowThroughput();
                         }
                     }
+
+                    if (useRayVertexType)
+                    {
+                        for (var i = 0; i < path.Edges.Count; i++)
+                        {
+                            Vertex curVertex = path.Edges[i].to;
+                            curVertex.SetMaterial(curVertex.Type.Value switch
+                            {
+                                RayVertexType.Absorp => GraphColor.Black,
+                                RayVertexType.Scatter => GraphColor.White,
+                                RayVertexType.Null => GraphColor.White,
+                                RayVertexType.Entry => GraphColor.Green,
+                                RayVertexType.ScatterFinal => GraphColor.Red,
+                                _ => throw new SystemException()
+                            });
+                        }
+                    }
                 }
             }
 
-            if (description.Contains("grid_queue"))
+            if (description.Contains("search_queue"))
             {
                 foreach (Vertex vertex in _vertices)
                 {
-                    vertex.SetMaterial(GraphColor.YellowTrans);
+                    vertex.SetMaterial(GraphColor.YellowTransparent);
                     vertex.ScaleChild(1.2f);
                 }
             }
             
-            if (description.Contains("grid_surface"))
+            if (description.Contains("search_surface"))
             {
                 foreach (Vertex vertex in _vertices)
                 {
-                    vertex.SetMaterial(GraphColor.RedTrans);
+                    vertex.SetMaterial(GraphColor.BlueTransparent);
                     vertex.ScaleChild(1.2f);
                 }
             }
@@ -269,7 +287,7 @@ namespace Graph
             {
                 foreach (Vertex vertex in _vertices)
                 {
-                    vertex.SetMaterial(GraphColor.RedTrans);
+                    vertex.SetMaterial(GraphColor.BlueTransparent);
                     vertex.ScaleChild(0.6f);
                 }
             }

@@ -1,20 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Graph
 {
     public enum GraphColor
     {
-        YellowTrans,
-        RedTrans,
-        Yellow
+        YellowTransparent,
+        BlueTransparent,
+        Yellow,
+        Red,
+        Green,
+        Black,
+        White
     }
 
     public class Colorable : MonoBehaviour
     {
-        private static Material _yellowTrans;
-        private static Material _redTrans;
-        private static Material _yellow;
+        private static List<Material> _materials;
 
         private Renderer _renderer;
         private GraphColor _color;
@@ -22,10 +25,16 @@ namespace Graph
 
         protected void Init()
         {
-            _yellowTrans = Resources.Load<Material>("YellowTransparent");
-            _redTrans = Resources.Load<Material>("RedTransparent");
-            _yellow = Resources.Load<Material>("Yellow");
-            
+            if (ReferenceEquals(_materials, null))
+            {
+                _materials = new List<Material>(Enum.GetValues(typeof(GraphColor)).Length);
+                foreach (GraphColor color in Enum.GetValues(typeof(GraphColor)))
+                {
+                    string colorName = Enum.GetName(typeof(GraphColor), color);
+                    _materials.Add(Resources.Load<Material>($"Materials/{colorName}"));
+                }
+            }
+
             _renderer = GetComponentInChildren<Renderer>();
         }
 
@@ -37,13 +46,7 @@ namespace Graph
         public void SetMaterial(GraphColor color)
         {
             _color = color;
-            _renderer.material = color switch
-            {
-                GraphColor.YellowTrans => _yellowTrans,
-                GraphColor.RedTrans => _redTrans,
-                GraphColor.Yellow => _yellow,
-                _ => throw new SystemException()
-            };
+            _renderer.material = _materials[(int)color];
         }
 
         public void ShowThroughput()
