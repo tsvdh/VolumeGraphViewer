@@ -10,7 +10,6 @@ namespace Graph
         public int id;
         public Vertex from;
         public Vertex to;
-        public EdgeData data;
 
         public void Init(int id, Vertex from, Vertex to, EdgeData data)
         {
@@ -19,7 +18,7 @@ namespace Graph
             this.id = id;
             this.from = from;
             this.to = to;
-            this.data = data;
+            SetColorData(data);
 
             Vector3 start = from.transform.position;
             Vector3 end = to.transform.position;
@@ -53,5 +52,6 @@ namespace Graph
     {
         public List<float> Throughput;
         public float WeightedThroughput;
+        public int NumSamples;
     }
 }

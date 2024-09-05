@@ -90,7 +90,7 @@ namespace Graph
             Debug.Log($"Reading {id} {DateTimeOffset.Now.ToUnixTimeMilliseconds() - start}ms");
 
             start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            var description = new List<string>(lines.First.Value.Split(' '));
+            var description = new List<string>(lines.First.Value.Split('_'));
             lines.RemoveFirst();
             
             string[] extraMeta = lines.First.Value.Split(' ');
@@ -202,8 +202,8 @@ namespace Graph
 
                 var index = 2;
                 int edgesInPath = int.Parse(pathData[1]);
-                int numsToParse = edgesInPath * (useThroughput ? 6 : 1);
-                while (index <  2 + numsToParse)
+                // int numsToParse = edgesInPath * (useThroughput ? 6 : 1);
+                while (index <  2 + edgesInPath)
                 {
                     int pathEdgeId = int.Parse(pathData[index++]);
                     foreach (Edge edge in _edges)
@@ -212,12 +212,12 @@ namespace Graph
                         {
                             path.Edges.Add(edge);
 
-                            if (useThroughput)
-                            {
-                                (int newIndex, EdgeData edgeData) = ReadEdgeData(index, pathData);
-                                index = newIndex;
-                                edge.SetColorData(edgeData);
-                            }
+                            // if (useThroughput)
+                            // {
+                            //     (int newIndex, EdgeData edgeData) = ReadEdgeData(index, pathData);
+                            //     index = newIndex;
+                            //     edge.SetColorData(edgeData);
+                            // }
                             break;
                         }
                     }
@@ -291,18 +291,39 @@ namespace Graph
                     vertex.ScaleChild(0.6f);
                 }
             }
+            
+            if (description.Contains("grid"))
+            {
+                foreach (Vertex vertex in _vertices)
+                {
+                    vertex.SetMaterial(GraphColor.BlueTransparent);
+                    vertex.ScaleChild(0.6f);
+                }
+            }
+
+            if (description.Contains("transmittance"))
+            {
+                foreach (Edge edge in _edges)
+                {
+                    edge.SetMaterial(GraphColor.Yellow);
+                    edge.ShowThroughput();
+                }
+            }
 
             Debug.Log($"Parsing {id} {DateTimeOffset.Now.ToUnixTimeMilliseconds() - start}ms");
         }
 
         private static Tuple<int, EdgeData> ReadEdgeData(int start, string[] input)
         {
-            var data = new EdgeData {Throughput = new List<float>(4),
-                WeightedThroughput = float.Parse(input[start + 4]) };
+            var data = new EdgeData {
+                Throughput = new List<float>(4),
+                WeightedThroughput = float.Parse(input[start + 4]),
+                NumSamples = int.Parse(input[start + 5])
+            };
             for (var j = 0; j < 4; j++)
                 data.Throughput.Add(float.Parse(input[start + j]));
 
-            return new Tuple<int, EdgeData>(start + 5, data);
+            return new Tuple<int, EdgeData>(start + 6, data);
         }
     }
 }

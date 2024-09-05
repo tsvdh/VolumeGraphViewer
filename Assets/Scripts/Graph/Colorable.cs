@@ -65,7 +65,8 @@ namespace Graph
                 throw new SystemException();
 
             Color newColor = _renderer.material.color;
-            newColor.b = 1 - weight;
+            newColor.r = weight;
+            newColor.g = weight;
             _renderer.material.color = newColor;
         }
     }

@@ -728,8 +728,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useSimpleMeshes: 1
-  id: base
-  fileName: surfaces/cube
+  id: grid
+  fileName: grids/cube_transmittance
   primaryGraph: 1
 --- !u!4 &1221586416
 Transform:
@@ -754,14 +754,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1221586414}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 046bfafd8a574bd4b5506fc26ba7ebd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   useSimpleMeshes: 1
-  id: paths
-  fileName: paths/cube
+  id: grid
+  fileName: grids/cube
   primaryGraph: 0
 --- !u!114 &1221586418
 MonoBehaviour:
