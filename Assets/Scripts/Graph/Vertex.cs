@@ -20,8 +20,9 @@ namespace Graph
         public RayVertexType? Type;
         public List<Edge> inEdges = new();
         public List<Edge> outEdges = new();
+        public float Lighting;
 
-        public void Init(int id, Vector3 graphPos, int type)
+        public void Init(int id, Vector3 graphPos, int type, float? lighting)
         {
             base.Init();
             
@@ -29,6 +30,8 @@ namespace Graph
             this.graphPos = graphPos;
             if (type != -1)
                 Type = (RayVertexType)type;
+            if (lighting.HasValue)
+                Lighting = lighting.Value;
 
             transform.position = graphPos;
         }

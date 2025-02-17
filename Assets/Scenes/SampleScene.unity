@@ -708,6 +708,7 @@ GameObject:
   - component: {fileID: 1221586418}
   - component: {fileID: 1221586415}
   - component: {fileID: 1221586417}
+  - component: {fileID: 1221586419}
   m_Layer: 0
   m_Name: Graph
   m_TagString: Untagged
@@ -728,8 +729,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useSimpleMeshes: 1
-  id: grid
-  fileName: grids/cube_transmittance
+  id: cube
+  fileName: pdfTest
   primaryGraph: 1
 --- !u!4 &1221586416
 Transform:
@@ -760,8 +761,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useSimpleMeshes: 1
-  id: grid
-  fileName: grids/cube
+  id: cube
+  fileName: cube
   primaryGraph: 0
 --- !u!114 &1221586418
 MonoBehaviour:
@@ -775,7 +776,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e42dae0585741e38f65a9b24c46caa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: C:\Users\tsvdh\CLionProjects\AcceleratedVolRenderer\files\graphs
+  basePath: C:\Users\tsvdh\CodeProjects\Clion\AcceleratedVolRenderer\files\graphs
+--- !u!114 &1221586419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1221586414}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 046bfafd8a574bd4b5506fc26ba7ebd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useSimpleMeshes: 1
+  id: boundary
+  fileName: cube
+  primaryGraph: 0
 --- !u!1001 &1289849484
 PrefabInstance:
   m_ObjectHideFlags: 0

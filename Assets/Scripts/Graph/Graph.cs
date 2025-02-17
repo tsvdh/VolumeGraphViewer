@@ -90,7 +90,7 @@ namespace Graph
             Debug.Log($"Reading {id} {DateTimeOffset.Now.ToUnixTimeMilliseconds() - start}ms");
 
             start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            var description = new List<string>(lines.First.Value.Split('_'));
+            string description = lines.First.Value;
             lines.RemoveFirst();
             
             string[] extraMeta = lines.First.Value.Split(' ');
@@ -108,13 +108,16 @@ namespace Graph
             bool useCoors = bool.Parse(flags[0]);
             bool useThroughput = bool.Parse(flags[1]);
             bool useRayVertexType = bool.Parse(flags[2]);
+            bool useLighting = bool.Parse(flags[3]);
             lines.RemoveFirst();
 
             string[] baseMeta = lines.First.Value.Split(' ');
-            int curId = int.Parse(baseMeta[0]);
-            int numVertices = int.Parse(baseMeta[1]);
-            int numEdges = int.Parse(baseMeta[2]);
-            int numPaths = int.Parse(baseMeta[3]);
+            int curVertexId = int.Parse(baseMeta[0]);
+            int curEdgeId = int.Parse(baseMeta[1]);
+            int curPathId = int.Parse(baseMeta[2]);
+            int numVertices = int.Parse(baseMeta[3]);
+            int numEdges = int.Parse(baseMeta[4]);
+            int numPaths = int.Parse(baseMeta[5]);
             lines.RemoveFirst();
 
             var vertexWorldPositions = new List<Vector3>();
@@ -134,8 +137,10 @@ namespace Graph
                 _vertices.Add(v);
 
                 int vertexType = useRayVertexType ? int.Parse(vertexData[4]) : -1;
+                int lightingIndex = useRayVertexType ? 5 : 4;
+                float? lighting = useLighting ? float.Parse(vertexData[lightingIndex]) : null;
                 
-                v.Init(int.Parse(vertexData[0]), graphPos, vertexType);
+                v.Init(int.Parse(vertexData[0]), graphPos, vertexType, lighting);
                 vertexWorldPositions.Add(vertexObj.transform.position);
                 
                 lines.RemoveFirst();
@@ -307,6 +312,19 @@ namespace Graph
                 {
                     edge.SetMaterial(GraphColor.Yellow);
                     edge.ShowThroughput();
+                }
+            }
+
+            if (description.Contains("outline"))
+            {
+                foreach (Vertex vertex in _vertices)
+                {
+                    vertex.SetMaterial(GraphColor.BlueTransparent);
+                }
+
+                foreach (Edge edge in _edges)
+                {
+                    edge.SetMaterial(GraphColor.BlueTransparent);
                 }
             }
 
